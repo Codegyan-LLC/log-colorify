@@ -7,8 +7,16 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
+  "keywords": [
+    "codegyan",
+    "logcolor",
+    "log color",
+    "log colorify",
+    "console color"
+  ],
+  "license": "MIT",
+  "private": false,
   "author": "Codegyan <support@codegyan.in>",
-  "license": "ISC",
   "description": "The Log colorify provides a simple way to log messages with color-coded output in TypeScript.",
   "dependencies": {
     "typescript": "^5.4.5"
