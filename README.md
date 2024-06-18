@@ -16,7 +16,7 @@ The `Log colorify` provides a simple way to log messages with color-coded output
 2. Install the `Log colorify` module using npm:
 
    ```bash
-   npm install log-colorify
+   npm install codegyan-log-colorify
     ```
 
 ## Usages
@@ -24,7 +24,7 @@ The `Log colorify` provides a simple way to log messages with color-coded output
 Import the Log class into your TypeScript file and use the provided static methods to log messages:
 
 ```js
-import { Log } from 'log-colorify';
+import { Log } from 'codegyan-log-colorify';
 
 Log.debug('This is a debug message');
 Log.info('This is an info message');
