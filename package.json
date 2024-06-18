@@ -1,19 +1,20 @@
 {
   "name": "codegyan-log-colorify",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
   },
-  "author": "",
+  "author": "Codegyan <support@codegyan.in>",
   "license": "ISC",
-  "description": "",
+  "description": "The Log colorify provides a simple way to log messages with color-coded output in TypeScript.",
   "dependencies": {
     "typescript": "^5.4.5"
   },
   "files": [
     "dist/**/*"
-  ]
+  ],
+  "repository": "github:Codegyan-LLC/log-colorify"
 }
