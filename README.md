@@ -1,5 +1,8 @@
 # Log Colorify
+
+[![NPM version](https://img.shields.io/npm/v/codegyan-log-colorify)](https://npmjs.org/package/codegyan-log-colorify)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+![npm downloads](https://img.shields.io/npm/dt/codegyan-log-colorify)
 
 The `Log colorify` provides a simple way to log messages with color-coded output in TypeScript.
 
