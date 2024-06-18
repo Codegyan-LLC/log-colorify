@@ -1,0 +1,19 @@
+{
+  "name": "log-colorify",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "typescript": "^5.4.5"
+  },
+  "files": [
+    "dist/**/*"
+  ]
+}
