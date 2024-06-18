@@ -17,6 +17,9 @@ jobs:
           node-version: 22
       - run: npm run build
 
+      - name: Change directory to dist
+        run: cd dist
+
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
@@ -27,13 +30,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
       
-      - name: Build package
-        run: npm run build
-
-      - name: Change directory to dist
-        run: cd dist
-
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
