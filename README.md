@@ -26,6 +26,7 @@ Import the Log class into your TypeScript file and use the provided static metho
 ```js
 import { Log } from 'codegyan-log-colorify';
 
+Log.success('This is a success message');
 Log.debug('This is a debug message');
 Log.info('This is an info message');
 Log.notice('This is a notice message');

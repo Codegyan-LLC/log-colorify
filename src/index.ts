@@ -8,7 +8,7 @@ export class Log {
     }
 
     static info(msg: string) {
-        console.log(`%c ${msg}`, 'color: yellow');
+        console.log(`%c ${msg}`, 'color: black; background: yellow');
     }
 
     static debug(msg: string) {
@@ -32,6 +32,6 @@ export class Log {
     }
 
     static alert(msg: string) {
-        console.log(`%c ${msg}`, 'color: red; background-color: yellow; font-weight: bold;');
+        console.log(`%c ${msg}`, 'color: white; background-color: red; font-weight: bold;');
     }
 }
