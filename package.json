@@ -1,6 +1,6 @@
 {
   "name": "codegyan-log-colorify",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -19,7 +19,7 @@
   "author": "Codegyan <support@codegyan.in>",
   "description": "The Log colorify provides a simple way to log messages with color-coded output in TypeScript.",
   "dependencies": {
-    "typescript": "^5.4.5"
+    "typescript": "^5.9.2"
   },
   "files": [
     "dist/**/*"
