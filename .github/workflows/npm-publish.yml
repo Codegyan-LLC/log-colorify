@@ -32,6 +32,10 @@ jobs:
       - name: Bump version
         id: version
         run: |
+          # Author identity
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           # Bump patch version (you can change to minor/major if needed)
           NEW_VERSION=$(npm version patch -m "chore(release): v%s [skip ci]")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
