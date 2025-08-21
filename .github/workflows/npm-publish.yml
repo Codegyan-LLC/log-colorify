@@ -1,86 +1,36 @@
-name: Git Package Release & Publish oon NPM
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Node.js Package
 
 on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write   # needed to push commits, tags, and create releases
-  packages: write   # needed for publishing GitHub packages (optional)
-  
-jobs:
   release:
+    types: [created]
+
+jobs:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.new_version }}
-
     steps:
-      # Checkout repo
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: 24
+      - run: npm run build
 
-      # Git identity (required for npm version)
-      - name: Setup Git identity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      # Install dependencies
-      - name: Install dependencies
-        run: npm install
-
-      # Bump version dynamically
-      - name: Bump version
-        id: version
-        run: |
-          NEW_VERSION=$(npm version patch -m "chore(release): v%s [skip ci]")
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-
-      # Push changes (commit + tag)
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          tags: true
-
-      # Create GitHub Release
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.new_version }}
-          name: Release ${{ steps.version.outputs.new_version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Change directory to dist
+        run: cd dist
 
   publish-npm:
-    needs: release   # ⬅ Runs only after release is successful
+    needs: build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org/'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build package
-        run: npm run build
-
-      - name: Publish to NPM
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+      
+      - name: Publish to npm
         run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
