@@ -50,6 +50,11 @@ jobs:
         with:
           node-version: 24
 
+      - name: Setup Git identity
+        run: |
+          git config --local user.name "Prathmesh Yelne"
+          git config --local user.email "prathameshyelane@gmail.com"
+
       - name: Install dependencies
         run: npm install
 
