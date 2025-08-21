@@ -1,7 +1,4 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
-name: Release Git Package & Publish on NPM 
+name: Release & Publish
 
 on:
   push:
@@ -11,6 +8,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.new_version }}
 
     steps:
       # Checkout repo
@@ -21,26 +20,31 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: '24'
+
+      # Git identity (required for npm version)
+      - name: Setup Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       # Install deps
       - name: Install dependencies
         run: npm install
 
-      # Bump version dynamically & push tag
+      # Bump version dynamically
       - name: Bump version
         id: version
         run: |
-          # Author identity
+ 
+          # gitbot
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Bump patch version (you can change to minor/major if needed)
+          git config user.email "github-actions[bot]@users.noreply.github.com" 
+
           NEW_VERSION=$(npm version patch -m "chore(release): v%s [skip ci]")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
-      # Push updated package.json and tag to main
+      # Push changes (commit + tag)
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
         with:
@@ -57,8 +61,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Publish to NPM
+  publish-npm:
+    needs: release   # ⬅ Runs only after release is successful
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build package
+        run: npm run build
+
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
