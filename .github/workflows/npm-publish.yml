@@ -1,128 +1,36 @@
-# 🚀 Release & Publish Workflow
-# 
-# This GitHub Actions workflow automates the full release process:
-# 
-# 1. On every push to the `main` branch:
-#    - Bumps the version in `package.json` automatically (patch level: v1.0.6 → v1.0.7).
-#    - Commits and pushes the new version + Git tag back to `main`.
-#    - Creates a GitHub Release with the new tag.
-#
-# 2. Build Job:
-#    - Runs `npm install` and `npm run build`.
-#    - Archives the build output (`dist/`) as an artifact to pass to the next job.
-#
-# 3. Publish to NPM:
-#    - Downloads the build artifact (`dist/`).
-#    - Publishes it to the npm registry using the `NPM_AUTH_TOKEN` secret.
-#
-# 🔑 Requirements:
-# - `secrets.PERSONAL_TOKEN` → A GitHub Personal Access Token with `repo` scope (used to push to protected `main`).
-# - `secrets.NPM_AUTH_TOKEN` → An npm token with publish rights.
-#
-# ✅ This ensures every commit to `main` automatically:
-#    → bumps the version
-#    → creates a GitHub Release
-#    → builds the package
-#    → publishes the compiled output to npm.
-#
-# ------------------------------------------------------------------------
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-
-name: Release Git Package & Publish on NPM
+name: Node.js Package
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [created]
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.new_version }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Setup Git identity
-        run: |
-          git config --local user.name "Prathmesh Yelne"
-          git config --local user.email "prathameshyelane@gmail.com"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Bump version
-        id: version
-        run: |
-          NEW_VERSION=$(npm version patch -m "chore(release): v%s [skip ci]")
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Push version bump and tag
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          github_token: ${{ secrets.PERSONAL_TOKEN }}   # ← use PAT, since main is protected
-          branch: main
-          tags: true
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.new_version }}
-          name: Release ${{ steps.version.outputs.new_version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build:
-    needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - run: npm run build
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build package
-        run: npm run build
-
-      - name: Archive build
-        run: tar -czf dist.tar.gz dist
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist.tar.gz
+      - name: Change directory to dist
+        run: cd dist
 
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org/
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-
-      - name: Extract build
-        run: tar -xzf dist.tar.gz
-
+      
       - name: Publish to npm
-        run: npm publish dist --access public
+        run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
