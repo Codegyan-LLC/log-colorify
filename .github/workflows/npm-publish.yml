@@ -1,10 +1,14 @@
-name: Release & Publish
+name: Git Package Release & Publish oon NPM
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: write   # needed to push commits, tags, and create releases
+  packages: write   # needed for publishing GitHub packages (optional)
+  
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -28,7 +32,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Install deps
+      # Install dependencies
       - name: Install dependencies
         run: npm install
 
@@ -36,11 +40,6 @@ jobs:
       - name: Bump version
         id: version
         run: |
- 
-          # gitbot
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com" 
-
           NEW_VERSION=$(npm version patch -m "chore(release): v%s [skip ci]")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
@@ -64,6 +63,7 @@ jobs:
   publish-npm:
     needs: release   # ⬅ Runs only after release is successful
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
